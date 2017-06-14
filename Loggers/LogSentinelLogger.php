@@ -12,11 +12,14 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
         if ($type < 0010 && !$this->plugin->settings->IsPhpErrorLoggingEnabled()) return;
         if ($type == 9999) return; // skip promo events
         
+		$current_user = wp_get_current_user();
+		$username = $current_user->user_login;
+		
         $entity = $this->GetEntity($type);
         $action = $this->GetAction($type);
         $entityId = $this->GetEntityId($data, $entity);
         $root = get_option("url");
-        $url = $root . '/api/log/' . $data['CurrentUserID'] . '/' . $action . '/' . $entity . '/' . $entityId . "?actorDisplayName=" . $data["Username"] . "&userRoles=" . $this->GetRolesParam($data["CurrentUserRoles"]);
+        $url = $root . '/api/log/' . $data['CurrentUserID'] . '/' . $action . '/' . $entity . '/' . $entityId . "?actorDisplayName=" . $username . "&userRoles=" . $this->GetRolesParam($data["CurrentUserRoles"]);
  
         $data["type"] = $type;
         $response = wp_remote_post( $url, array( 
@@ -43,18 +46,18 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
     }
 
     private function GetEntityId($data, $entity) {
-        if (in_array("PostID", $data)) {
-            return data["PostID"];
-        } else if (in_array("CommentID", $data)) {
-            return data["CommentID"];
-        } else if (in_array("TargetUserID", $data)) {
-            return data["TargetUserID"];
-        } else if (in_array("NewUserID", $data)) {
-            return data["NewUserID"];
-        } else if (in_array("MenuName", $data)) {
-            return data["MenuName"];
-        } else if (in_array("AttachmentID", $data)) {
-            return data["AttachmentID"];
+        if (isset($data["PostID"])) {
+            return $data["PostID"];
+        } else if (isset($data["CommentID"])) {
+            return $data["CommentID"];
+        } else if (isset($data["TargetUserID"])) {
+            return $data["TargetUserID"];
+        } else if (isset($data["NewUserID"])) {
+            return $data["NewUserID"];
+        } else if (isset($data["MenuName"])) {
+            return $data["MenuName"];
+        } else if (isset($data["AttachmentID"])) {
+            return $data["AttachmentID"];
         }
         return "NONE";
     }
