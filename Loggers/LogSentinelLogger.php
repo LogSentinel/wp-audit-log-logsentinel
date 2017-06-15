@@ -11,7 +11,9 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
         // is this a php alert, and if so, are we logging such alerts?
         if ($type < 0010 && !$this->plugin->settings->IsPhpErrorLoggingEnabled()) return;
         if ($type == 9999) return; // skip promo events
-        
+		$organizationId = trim(get_option("organization_id"));
+        if (!isset($organizationId) || $organizationId == "") return;
+		
 		$current_user = wp_get_current_user();
 		$username = $current_user->user_login;
 		
@@ -26,8 +28,8 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
             'body' => $this->json_encode($data),
             'method' => "POST",
             'headers' => array(
-				"Authorization" => 'Basic ' . base64_encode(get_option("organization_id") . ':' . get_option("secret")), 
-				"Application-Id" => get_option("application_id"),
+				"Authorization" => 'Basic ' . base64_encode(organizationId . ':' . trim(get_option("secret"))), 
+				"Application-Id" => trim(get_option("application_id")),
 				"Content-Type" => "application/json; charset=utf-8"
 			)
         ) );
