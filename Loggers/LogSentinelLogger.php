@@ -28,7 +28,7 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
             'body' => $this->json_encode($data),
             'method' => "POST",
             'headers' => array(
-				"Authorization" => 'Basic ' . base64_encode(organizationId . ':' . trim(get_option("secret"))), 
+				"Authorization" => 'Basic ' . base64_encode($organizationId . ':' . trim(get_option("secret"))), 
 				"Application-Id" => trim(get_option("application_id")),
 				"Content-Type" => "application/json; charset=utf-8"
 			)

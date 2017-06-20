@@ -2,7 +2,7 @@
 /*
   Plugin Name: LogSentinel storage for WP Security Audit Log
   Plugin URI: https://github.com/logsentimel/wp-audit-log-logsentinel
-  Description: an addon to WP Security Audit Log Plugin to store events in LogSentinel.com
+  Description: An addon to WP Security Audit Log Plugin to store events in LogSentinel.com
   Version: 1.0
   Author: Bozhdiar Bozhanov
   Author URI:
