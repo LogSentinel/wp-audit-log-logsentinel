@@ -21,8 +21,25 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
         $action = $this->GetAction($type);
         $entityId = $this->GetEntityId($data, $entity);
         $root = get_option("url");
-        $url = $root . '/api/log/' . $data['CurrentUserID'] . '/' . $action . '/' . $entity . '/' . $entityId . "?actorDisplayName=" . $username . "&actorRoles=" . implode(",", $data["CurrentUserRoles"]);
+		
+		$currentUserId = $data['CurrentUserID'];
+		if ($currentUserId == 0) {
+			$currentUserId = $current_user->ID;
+			$data['CurrentUserID'] = $currentUserId;
+		}
+		
+        $url = $root . '/api/log/' . $currentUserId . '/' . $action . '/' . $entity . '/' . $entityId . "?actorDisplayName=" . $username . "&actorRoles=" . implode(",", $data["CurrentUserRoles"]);
  
+		if ($action == "User_logged_in" || $action == "User_logged_in_with_existing_session(s)") {
+			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN';
+		} else if ($action == "User_logged_out") {
+			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGOUT';
+		} else if ($action == "Login_failed") {
+			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN_FAILED';
+		} else if ($action == "Login_failed__/_non_existing_user") {
+			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN_FAILED?missingUser=true';
+		}
+		
         $data["type"] = $type;
         $response = wp_remote_post( $url, array( 
             'body' => $this->json_encode($data),
