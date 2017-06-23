@@ -10,12 +10,16 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
     {
         // is this a php alert, and if so, are we logging such alerts?
         if ($type < 0010 && !$this->plugin->settings->IsPhpErrorLoggingEnabled()) return;
-        if ($type == 9999) return; // skip promo events
+        if ($type == 9999 || $type == 6007) return; // skip promo events and 404 warnings
 		$organizationId = trim(get_option("organization_id"));
         if (!isset($organizationId) || $organizationId == "") return;
 		
 		$current_user = wp_get_current_user();
-		$username = $current_user->user_login;
+		
+		$username = $data['Username'];
+		if (!$username) {
+			$username = $current_user->user_login;
+		}
 		
         $entity = $this->GetEntity($type);
         $action = $this->GetAction($type);
@@ -25,7 +29,9 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
 		$currentUserId = $data['CurrentUserID'];
 		if ($currentUserId == 0) {
 			$currentUserId = $current_user->ID;
-			$data['CurrentUserID'] = $currentUserId;
+			if ($currentUserId != 0) {
+				$data['CurrentUserID'] = $currentUserId;
+			}
 		}
 		
         $url = $root . '/api/log/' . $currentUserId . '/' . $action . '/' . $entity . '/' . $entityId . "?actorDisplayName=" . $username . "&actorRoles=" . implode(",", $data["CurrentUserRoles"]);
@@ -82,6 +88,13 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
         } else if (isset($data["AttachmentID"])) {
             return $data["AttachmentID"];
         }
+		
+		// in some cases the ID is buried inside other data, so let's fetch it from there
+		if (isset($data["EditorLinkPost"])) {
+			$output_array = array();
+			preg_match("/post=(\d+)&/", $data["EditorLinkPost"], $output_array);
+			return $output_array[1];
+		}
         return "NONE";
     }
     
