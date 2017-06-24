@@ -15,6 +15,9 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
         if (!isset($organizationId) || $organizationId == "") return;
 		
 		$current_user = wp_get_current_user();
+		if ($current_user->ID == 0) {
+			$current_user = get_user_by('login', $data['Username']);
+		}
 		
 		$username = $data['Username'];
 		if (!$username) {
@@ -34,16 +37,18 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
 			}
 		}
 		
-        $url = $root . '/api/log/' . $currentUserId . '/' . $action . '/' . $entity . '/' . $entityId . "?actorDisplayName=" . $username . "&actorRoles=" . implode(",", $data["CurrentUserRoles"]);
+		$params = "?actorDisplayName=" . $username . "&actorRoles=" . implode(",", $data["CurrentUserRoles"]);
+		
+        $url = $root . '/api/log/' . $currentUserId . '/' . $action . '/' . $entity . '/' . $entityId . $params;
  
 		if ($action == "User_logged_in" || $action == "User_logged_in_with_existing_session(s)") {
-			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN';
+			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN' . $params;
 		} else if ($action == "User_logged_out") {
-			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGOUT';
+			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGOUT' . $params;
 		} else if ($action == "Login_failed") {
-			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN_FAILED';
+			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN_FAILED' . $params;
 		} else if ($action == "Login_failed__/_non_existing_user") {
-			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN_FAILED?missingUser=true';
+			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN_FAILED' . $params . '&missingUser=true';
 		}
 		
         $data["type"] = $type;
