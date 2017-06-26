@@ -4,7 +4,7 @@ Tags: WP Security Audit Log, LogSentimel, audit, audit log
 Requires at least: 4
 Tested up to: 4.7.2
 Depends on : WP Security Audit Log
-Stable tag: 1.0
+Stable tag: 0.3
 
 An Addon to WP Security Audit Log to store events in LogSentinel.com
 
