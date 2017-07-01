@@ -14,12 +14,13 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
 		$organizationId = trim(get_option("organization_id"));
         if (!isset($organizationId) || $organizationId == "") return;
 		
+		$username = $data['Username'];
+		
 		$current_user = wp_get_current_user();
-		if ($current_user->ID == 0) {
-			$current_user = get_user_by('login', $data['Username']);
+		if ($current_user->ID == 0 && isset($username)) {
+			$current_user = get_user_by('login', $username);
 		}
 		
-		$username = $data['Username'];
 		if (!$username) {
 			$username = $current_user->user_login;
 		}
@@ -48,7 +49,7 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
 		} else if ($action == "Login_failed") {
 			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN_FAILED' . $params;
 		} else if ($action == "Login_failed__/_non_existing_user") {
-			$url = $root . '/api/log/' . $currentUserId . '/auth/LOGIN_FAILED' . $params . '&missingUser=true';
+			$url = $root . '/api/log/unknown/auth/LOGIN_FAILED' . $params . '&missingUser=true';
 		}
 		
         $data["type"] = $type;
