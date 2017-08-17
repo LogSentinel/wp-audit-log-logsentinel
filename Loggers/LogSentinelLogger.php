@@ -10,7 +10,7 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
     {
         // is this a php alert, and if so, are we logging such alerts?
         if ($type < 0010 && !$this->plugin->settings->IsPhpErrorLoggingEnabled()) return;
-        if ($type == 9999 || $type == 6007) return; // skip promo events and 404 warnings
+        if ($type == 9999 || $type == 6007 || $type == 6000) return; // skip promo events, prune events and 404 warnings
 		$organizationId = trim(get_option("organization_id"));
         if (!isset($organizationId) || $organizationId == "") return;
 		
