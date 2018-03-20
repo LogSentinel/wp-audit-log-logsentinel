@@ -38,6 +38,10 @@ class WSAL_Loggers_LogSentinelLogger extends WSAL_AbstractLogger
 			}
 		}
 		
+		if ($currentUserId == '') {
+			$currentUserId = "None";
+		}
+		
 		$params = "?actorDisplayName=" . $username . "&actorRoles=" . implode(",", $data["CurrentUserRoles"]);
 		
         $url = $root . '/api/log/' . $currentUserId . '/' . $action . '/' . $entity . '/' . $entityId . $params;
